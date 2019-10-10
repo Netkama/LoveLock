@@ -8,6 +8,8 @@
 
 使用说明 
 1.双击启动应用程序，在任务管理器>进程里面会有 LoveLock.exe  不用了可以结束进程（注意有开机自启动，不需要删除源文件就可以了）
+
 2.轮播图片直接添加到imgs文件夹就可以了，注意分辨率
-下载程序
+
+下载程序       
 https://github.com/Netkama/TestTool/blob/master/TestTool/%E7%88%B1%E5%BF%83%E9%94%81V1.0.rar
