@@ -56,7 +56,7 @@ namespace TestTool
                 }
                 else if (shortcutPaths.Count < 1)//不存在则创建快捷方式
                 {
-                    CreateShortcut(systemStartPath, QuickName, appAllPath, "中吉售货机");
+                    CreateShortcut(systemStartPath, QuickName, appAllPath, "爱心锁");
                 }
             }
             else//开机不启动
