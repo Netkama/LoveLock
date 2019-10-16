@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TestTool.Properties
+namespace LoveLock.Properties
 {
 
 

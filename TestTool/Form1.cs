@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TestTool
+namespace LoveLock
 {
     public partial class Form1 : Form
     {

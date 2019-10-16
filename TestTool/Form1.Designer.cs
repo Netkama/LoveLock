@@ -1,4 +1,4 @@
-﻿namespace TestTool
+﻿namespace LoveLock
 {
     partial class Form1
     {

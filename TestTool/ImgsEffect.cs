@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
-namespace TestTool
+namespace LoveLock
 {
     /// <summary>
     /// 图片切换效果

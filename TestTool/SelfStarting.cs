@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 
 
-namespace TestTool
+namespace LoveLock
 {
     /// <summary>
     /// 开机自启动
