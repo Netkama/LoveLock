@@ -20,12 +20,12 @@ namespace LoveLock
         {
             this.Hide();
             Writelog("感谢使用：" + DateTime.Now);
-            MessageBox.Show("您已开启间隔60分钟自动锁屏功能，锁屏时间为3分钟。工作再忙，也要注意休息哦~");
             string strPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             string[] files = Directory.GetFiles(@strPath + "imgs", "*");
             pictureBox1.Image = Image.FromFile(files[0]);
             SelfStarting selfStarting = new SelfStarting();
             selfStarting.SetMeAutoStart();
+            MessageBox.Show("您已开启间隔60分钟自动锁屏功能，锁屏时间为3分钟。工作再忙，也要注意休息哦~");
         }
 
 
@@ -57,8 +57,8 @@ namespace LoveLock
             try
             {
               
-                if (DateTime.Now.Minute % 60 > 3)
-                //if (DateTime.Now.Second % 60 < 20)
+                // if (DateTime.Now.Minute % 60 > 3)
+               if (DateTime.Now.Second % 60 < 20)
                 {
                     this.Hide();
                 }
