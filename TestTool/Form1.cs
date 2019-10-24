@@ -4,12 +4,14 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace LoveLock
 {
     public partial class Form1 : Form
     {
+        bool isImg = false;    //是否在轮播
         public Form1()
         {
             InitializeComponent();
@@ -22,10 +24,8 @@ namespace LoveLock
             string strPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             string[] files = Directory.GetFiles(@strPath + "imgs", "*");
             pictureBox1.Image = Image.FromFile(files[0]);
-            timer1.Start();
             SelfStarting selfStarting = new SelfStarting();
             selfStarting.SetMeAutoStart();
-
         }
 
 
@@ -36,6 +36,7 @@ namespace LoveLock
         /// </summary>
         private void RandomBackgroundImage()
         {
+            isImg = true;
             string strPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             string[] files = Directory.GetFiles(@strPath + "imgs", "*");
             Random rd = new Random();
@@ -43,14 +44,9 @@ namespace LoveLock
             ImgsEffect imgsEffect = new ImgsEffect();
             Bitmap bmp1 = new Bitmap(pictureBox1.Image);
             Bitmap bmp2 = new Bitmap(Image.FromFile(files[i]));
-            //imgsEffect.Effect_BaiYeH(bmp1, bmp2, pictureBox1);
-            // imgsEffect.DanRu( bmp2, pictureBox1);
-            //imgsEffect.Effect_U2D(bmp1, bmp2, pictureBox1);
-            //imgsEffect.Effect_D2U(bmp1, bmp2, pictureBox1);
             imgsEffect.Effect_L2R(bmp1, bmp2, pictureBox1);
             pictureBox1.Image = bmp2;
-            //imgsEffect.Effect_R2L(bmp1, bmp2, pictureBox1);
-            //this.BackgroundImage = Image.FromFile(files[i]);
+            isImg = false;
         }
 
 
@@ -60,25 +56,29 @@ namespace LoveLock
 
             try
             {
+              
                 if (DateTime.Now.Minute % 60 > 3)
-                //if (DateTime.Now.Second % 60 < 30)
+                //if (DateTime.Now.Second % 60 < 20)
                 {
-                    this.Hide(); Hook_Clear();
+                    this.Hide();
                 }
                 else
                 {
-                    if (DateTime.Now.Second % 15 == 0)
-                    {
-                        //MessageBox.Show((DateTime.Now.Second % 10)  +"秒 时间刷新图片");
-                        RandomBackgroundImage();
-                    }
+             
                     this.Show();
-                    Hook_Start();
-                    System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("taskmgr");
-                    foreach (System.Diagnostics.Process p in killprocess)
+                    SetTopMost();
+                    if (DateTime.Now.Second % 15 == 0&& !isImg)
                     {
-                        p.Kill();
+                        Thread t = new Thread(RandomBackgroundImage);   //创建了线程还未开启
+                        t.Start();
+                        //RandomBackgroundImage();
                     }
+                    //Hook_Start();
+                    //System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("taskmgr");
+                    //foreach (System.Diagnostics.Process p in killprocess)
+                    //{
+                    //    p.Kill();
+                    //}
                 }
             }
             catch (Exception ex)
@@ -86,6 +86,18 @@ namespace LoveLock
                 Writelog("异常" + ex.ToString());
             }
         }
+
+
+
+        /// <summary>
+        /// 设置窗体抢占焦点
+        /// </summary>
+        void SetTopMost()
+        {
+            this.TopMost = false;
+            this.TopMost = true;
+        }
+
         private void killProcess(string name)
         {
             //name为要杀的程序进程名称
@@ -101,7 +113,7 @@ namespace LoveLock
         }
 
 
-        #region 屏蔽组合键的钩子
+        #region 屏蔽组合键的钩子(未用，改为强占焦点的方式)
         //委托 
         public delegate int HookProc(int nCode, int wParam, IntPtr lParam);
         static int hHook = 0;
