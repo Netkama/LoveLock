@@ -11,7 +11,9 @@ namespace LoveLock
 {
     public partial class Form1 : Form
     {
-        bool isImg = false;    //是否在轮播
+        bool isImg = true;    //是否切换图片
+        public static int level = 1;      //休息等级
+        public static bool isOpenOrClose = false;      //是否显示iconForm
         public Form1()
         {
             InitializeComponent();
@@ -21,11 +23,16 @@ namespace LoveLock
             this.Hide();
             Writelog("感谢使用：" + DateTime.Now);
             string strPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            string[] files = Directory.GetFiles(@strPath + "imgs", "*");
-            pictureBox1.Image = Image.FromFile(files[0]);
-            SelfStarting selfStarting = new SelfStarting();
+            string[] files = Directory.GetFiles(@strPath, "lock_48px.ico");
+            //添加右下角小图标的图片样式
+            this.notifyIcon1.Icon = new Icon(files[0]);
+            //显示托盘图标3秒
+            notifyIcon1.ShowBalloonTip(3000, "程序最小化提示",
+                     "图标已经缩小到托盘，打开窗口请双击图标即可。",
+                     ToolTipIcon.Info);
+             SelfStarting selfStarting = new SelfStarting();
             selfStarting.SetMeAutoStart();
-            MessageBox.Show("您已开启间隔60分钟自动锁屏功能，锁屏时间为3分钟。工作再忙，也要注意休息哦~");
+            //MessageBox.Show("您已开启间隔自动锁屏功能。工作再忙，也要注意休息哦~");
         }
 
 
@@ -36,17 +43,15 @@ namespace LoveLock
         /// </summary>
         private void RandomBackgroundImage()
         {
-            isImg = true;
             string strPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             string[] files = Directory.GetFiles(@strPath + "imgs", "*");
             Random rd = new Random();
             int i = rd.Next(files.Length);
-            ImgsEffect imgsEffect = new ImgsEffect();
-            Bitmap bmp1 = new Bitmap(pictureBox1.Image);
+            //ImgsEffect imgsEffect = new ImgsEffect();
+            //Bitmap bmp1 = new Bitmap(pictureBox1.Image);
             Bitmap bmp2 = new Bitmap(Image.FromFile(files[i]));
-            imgsEffect.Effect_L2R(bmp1, bmp2, pictureBox1);
+            //imgsEffect.Effect_L2R(bmp1, bmp2, pictureBox1);
             pictureBox1.Image = bmp2;
-            isImg = false;
         }
 
 
@@ -58,28 +63,25 @@ namespace LoveLock
             {
               
                 // if (DateTime.Now.Minute % 60 > 3)
-               if (DateTime.Now.Second % 60 < 20)
-                {
-                    this.Hide();
-                }
-                else
-                {
-             
-                    this.Show();
-                    SetTopMost();
-                    if (DateTime.Now.Second % 15 == 0&& !isImg)
-                    {
-                        Thread t = new Thread(RandomBackgroundImage);   //创建了线程还未开启
-                        t.Start();
-                        //RandomBackgroundImage();
-                    }
-                    //Hook_Start();
-                    //System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("taskmgr");
-                    //foreach (System.Diagnostics.Process p in killprocess)
-                    //{
-                    //    p.Kill();
-                    //}
-                }
+               //if (DateTime.Now.Second % 60 < 30)
+               // {
+               //     this.Hide(); isImg = true;
+               // }
+               // else
+               // {
+               //     if (isImg)
+               //     {
+               //         RandomBackgroundImage(); isImg = false;
+               //     }
+               //     this.Show();
+               //     SetTopMost();
+               //     Hook_Start();
+               //     //System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("taskmgr");
+               //     //foreach (System.Diagnostics.Process p in killprocess)
+               //     //{
+               //     //    p.Kill();
+               //     //}
+               // }
             }
             catch (Exception ex)
             {
@@ -265,6 +267,22 @@ namespace LoveLock
             stream.Write("\r\n");
             stream.Flush();
             stream.Close();
+        }
+        NotifyIconForm notifyIconForm = new NotifyIconForm(); 
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (isOpenOrClose)
+            {
+                notifyIconForm.Activate();//已打开，获得焦点，置顶。
+
+            }
+            else
+            {
+                isOpenOrClose = true;
+                notifyIconForm.ShowDialog(); 
+
+
+            }
         }
     }
 }
