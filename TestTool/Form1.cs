@@ -32,7 +32,7 @@ namespace LoveLock
                      ToolTipIcon.Info);
              SelfStarting selfStarting = new SelfStarting();
             selfStarting.SetMeAutoStart();
-            //MessageBox.Show("您已开启间隔自动锁屏功能。工作再忙，也要注意休息哦~");
+            MessageBox.Show("您已开启间隔自动锁屏功能。工作再忙，也要注意休息哦~");
         }
 
 
@@ -61,31 +61,50 @@ namespace LoveLock
 
             try
             {
-              
-                // if (DateTime.Now.Minute % 60 > 3)
-               //if (DateTime.Now.Second % 60 < 30)
-               // {
-               //     this.Hide(); isImg = true;
-               // }
-               // else
-               // {
-               //     if (isImg)
-               //     {
-               //         RandomBackgroundImage(); isImg = false;
-               //     }
-               //     this.Show();
-               //     SetTopMost();
-               //     Hook_Start();
-               //     //System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("taskmgr");
-               //     //foreach (System.Diagnostics.Process p in killprocess)
-               //     //{
-               //     //    p.Kill();
-               //     //}
-               // }
+
+                switch (level)
+                {
+                    case 1:
+                        //60分钟休息一次
+                        ImgShow(60, 3);
+                        break;
+                    case 2:
+                        //90分钟休息一次
+                        ImgShow(90, 6);
+                        break;
+                    case 3:
+                        //120分钟休息一次
+                        ImgShow(120, 10);
+                        break;
+                }
             }
             catch (Exception ex)
             {
                 Writelog("异常" + ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 全屏显示图片逻辑
+        /// </summary>
+        /// <param name="Minute">总分钟休息</param>
+        /// <param name="restMinute">休息分钟</param>
+        public void ImgShow(int Minute,int restMinute)
+        {
+            // if (DateTime.Now.Minute % 60 > 3)
+            if (DateTime.Now.Minute % Minute >= restMinute)
+            {
+                this.Hide(); isImg = true;
+            }
+            else
+            {
+                if (isImg)
+                {
+                    RandomBackgroundImage(); isImg = false;
+                }
+                this.Show();
+                SetTopMost();
+                Hook_Start();
             }
         }
 
