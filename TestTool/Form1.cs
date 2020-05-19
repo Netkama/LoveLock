@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace LoveLock
@@ -12,6 +11,7 @@ namespace LoveLock
     public partial class Form1 : Form
     {
         bool isImg = true;    //是否切换图片
+        public static string inputKey = "";      //保存解锁的输入
         public static int level = 1;      //休息等级
         public static bool isOpenOrClose = false;      //是否显示iconForm
         public Form1()
@@ -30,7 +30,7 @@ namespace LoveLock
             notifyIcon1.ShowBalloonTip(3000, "程序最小化提示",
                      "图标已经缩小到托盘，打开窗口请双击图标即可。",
                      ToolTipIcon.Info);
-             SelfStarting selfStarting = new SelfStarting();
+            SelfStarting selfStarting = new SelfStarting();
             selfStarting.SetMeAutoStart();
             MessageBox.Show("您已开启间隔自动锁屏功能。工作再忙，也要注意休息哦~");
         }
@@ -61,7 +61,6 @@ namespace LoveLock
 
             try
             {
-
                 switch (level)
                 {
                     case 1:
@@ -89,22 +88,32 @@ namespace LoveLock
         /// </summary>
         /// <param name="Minute">总分钟休息</param>
         /// <param name="restMinute">休息分钟</param>
-        public void ImgShow(int Minute,int restMinute)
+        public void ImgShow(int Minute, int restMinute)
         {
-            // if (DateTime.Now.Minute % 60 > 3)
-            if (DateTime.Now.Minute % Minute >= restMinute)
+            DateTime dateTime = DateTime.Now;
+            int dateMinute = (dateTime.Hour * 60) + dateTime.Minute;
+            //  if (DateTime.Now.Second % 60 > 30)
+            if (dateMinute % Minute >= restMinute)
             {
-                this.Hide(); isImg = true;
+                this.Hide(); isImg = true; Hook_Clear(); inputKey = "";
             }
             else
             {
-                if (isImg)
+                if (inputKey == "GL")
                 {
-                    RandomBackgroundImage(); isImg = false;
+                    this.Hide(); Hook_Clear();
                 }
-                this.Show();
-                SetTopMost();
-                Hook_Start();
+                else
+                {
+                    if (isImg)
+                    {
+                        RandomBackgroundImage(); isImg = false;
+                    }
+                    this.Show();
+                    SetTopMost(); 
+                    Hook_Start();
+                }
+
             }
         }
 
@@ -134,7 +143,7 @@ namespace LoveLock
         }
 
 
-        #region 屏蔽组合键的钩子(未用，改为强占焦点的方式)
+        #region 屏蔽组合键的钩子
         //委托 
         public delegate int HookProc(int nCode, int wParam, IntPtr lParam);
         static int hHook = 0;
@@ -214,6 +223,26 @@ namespace LoveLock
             if (nCode >= 0)
             {
                 KeyBoardHookStruct kbh = (KeyBoardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyBoardHookStruct));
+
+
+                if (kbh.vkCode == (int)Keys.G)
+                {
+                    inputKey = "G";
+                    return 1;
+                }
+                else if (kbh.vkCode == (int)Keys.L)
+                {
+                    if (inputKey == "G")
+                    {
+                        inputKey = "GL";
+                    }
+                    return 1;
+                }
+                else
+                {
+                    inputKey = "";
+                }
+      
                 if (kbh.vkCode == 91)  // 截获左win(开始菜单键) 
                 {
                     return 1;
@@ -287,7 +316,7 @@ namespace LoveLock
             stream.Flush();
             stream.Close();
         }
-        NotifyIconForm notifyIconForm = new NotifyIconForm(); 
+        NotifyIconForm notifyIconForm = new NotifyIconForm();
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (isOpenOrClose)
@@ -298,10 +327,12 @@ namespace LoveLock
             else
             {
                 isOpenOrClose = true;
-                notifyIconForm.ShowDialog(); 
+                notifyIconForm.ShowDialog();
 
 
             }
         }
+
+
     }
 }

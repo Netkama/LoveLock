@@ -65,5 +65,10 @@ namespace LoveLock
                 Form1.level = 3;
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            System.Environment.Exit(0);
+        }
     }
 }
